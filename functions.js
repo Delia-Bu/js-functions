@@ -57,3 +57,25 @@ function throttle(callback, delay) {
   };
   return throttledFunction;
 }
+
+// Curry
+// takes in a callback function and it returns a curried version of that function
+// the curried func will work the same, with the diff that the curried func can take in the arguments on at a time as a chain of function calls or multiple at any time
+// if no args are passed, we need to call the callback
+
+function curry(callback) {
+  // we don't need this binding
+  const curriedCallback = (...args) => {
+    if (args.length === 0) {
+      return callback();
+    }
+    return (...otherArgs) => {
+      if (otherArgs.length === 0) {
+        return callback(...args);
+      }
+      return curriedCallback(...args, ...otherArgs);
+    };
+  };
+
+  return curriedCallback;
+}
