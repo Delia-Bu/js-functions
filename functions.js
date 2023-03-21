@@ -79,3 +79,42 @@ function curry(callback) {
 
   return curriedCallback;
 }
+
+// memoize
+// in the event we call the function with the same parameteres, instead of calling the callback twice, the second time we use the original return value
+// resolve take in the arguments
+
+function memoize(callback, resolver) {
+  const cache = new Map(); //we use map instead of object so we can have any type as possible keys
+
+  function getCacheKey(args) {
+    return resolver != null ? resolver(...args) : JSON.stringify(args);
+  }
+
+  const memoized = function (...args) {
+    // check if we have called the funtion before with the same args based on the resolver
+    const cacheKey = getCacheKey(args);
+
+    if (cache.has(cacheKey)) {
+      return cache.get(cacheKey);
+    }
+    // if the cache doesn't have the key, we call the callback with tthe args and save the output
+    const output = callback(...args);
+    cache.set(cacheKey, output);
+    return output;
+  };
+
+  //add few methods on our memoized function
+  memoized.clear = function () {
+    cache.clear();
+  };
+  memoized.delete = function (...args) {
+    const cacheKey = getCacheKey(args);
+    cache.delete(cacheKey);
+  };
+  memoized.has = function (...args) {
+    const cacheKey = getCacheKey(args);
+    return cache.has(cacheKey); //returns boolean
+  };
+  return memoized;
+}
